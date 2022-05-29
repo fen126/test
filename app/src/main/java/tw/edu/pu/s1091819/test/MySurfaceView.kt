@@ -13,7 +13,8 @@ class MySurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceView
     (context, attrs), SurfaceHolder.Callback {
     lateinit var surfaceHolder: SurfaceHolder
     lateinit var BG: Bitmap
-    lateinit var SuperMan:Bitmap
+    var BGmoveX:Int = 0
+
     init {
         surfaceHolder = getHolder()
         BG = BitmapFactory.decodeResource(getResources(), R.drawable.background)
@@ -38,6 +39,23 @@ class MySurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceView
         var w: Double = BG.width / 1.75
         var h: Double = BG.height / 2.40
         var DestRect:Rect = Rect(0, 0, w.toInt(), h.toInt())
-        canvas.drawBitmap(BG, SrcRect, DestRect, null)
+        //canvas.drawBitmap(BG, SrcRect, DestRect, null)
+
+        BGmoveX -= 2
+        var BGnewX: Double = w + BGmoveX
+
+        // 如果已捲動整張圖，則重新開始
+        if (BGnewX <= 0) {
+            BGmoveX = 0
+            // only need one draw
+            canvas.drawBitmap(BG, SrcRect, DestRect, null)
+        } else {
+            // need to draw original and wrap
+            DestRect = Rect(BGmoveX, 0, (BGmoveX+w).toInt(), h.toInt())
+            canvas.drawBitmap(BG, SrcRect, DestRect, null)
+            DestRect = Rect(BGnewX.toInt(), 0, (BGnewX+w).toInt(), h.toInt())
+            canvas.drawBitmap(BG, SrcRect, DestRect, null)
+        }
+
     }
 }
